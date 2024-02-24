@@ -47,6 +47,11 @@ textarea {
 }
 
 
+.message-body pre {
+    white-space: pre-wrap;
+}
+
+
 @keyframes hide {
     0% {
         opacity: 1;
