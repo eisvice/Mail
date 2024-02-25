@@ -107,7 +107,6 @@ function load_email(id, mailbox) {
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#email-view').innerHTML = '';
   
-
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(email => {
@@ -147,9 +146,10 @@ function load_email(id, mailbox) {
       replyButton.innerHTML = 'Reply';
       document.querySelector('#email-view').append(emailSubject, emailSender, emailRecipient, emailDate, archiveButton, replyButton, emailBody);
       archiveButton.addEventListener('click', event => {
-        archive_mail(id, email.archived, event);
+        archive_mail(email, event);
+
       });
-      replyButton.addEventListener('click', event => {
+      replyButton.addEventListener('click', function() {
         email_reply(email);
       });
     } 
@@ -165,45 +165,26 @@ function load_email(id, mailbox) {
   .catch(error => console.error('Error fetching email details:', error));
   } 
 
-function archive_mail(id, isArchived, event) {
-  const element = event.target
-  element.parentElement.style.animationPlayState = 'paused';
-
-  if (!element.parentElement) {
-    return;
+function archive_mail(email, event) {
+  const element = event.target;
+  let bodyParams;
+  if (email.archived) {
+    bodyParams = {archived: false};
+  } else {
+    bodyParams = {archived: true};
   }
-  
-  if (!isArchived && element.className === 'archive-button') {
-    fetch(`/emails/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        archived: true
-      })
-    })
-    .then(() => {
-        element.parentElement.style.animationPlayState = 'running';
-        element.parentElement.addEventListener('animationend', () => {
-          element.parentElement.style.animationPlayState = 'paused';
-          load_mailbox('inbox');
-        });
-    })
-    .catch(error => console.error('Error archiving email:', error));
-  } else if (isArchived && element.className === 'unarchive-button') {
-    fetch(`/emails/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        archived: false
-      })
-    })
-    .then(() => {
-        element.parentElement.style.animationPlayState = 'running';
-        element.parentElement.addEventListener('animationend', () => {
-          element.parentElement.style.animationPlayState = 'paused';
-          load_mailbox('inbox');
-        });
-    })
-    .catch(error => console.error('Error unarchiving email:', error));
-  }
+  fetch(`/emails/${email.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(bodyParams)
+  })
+  .then(() => {
+    element.parentElement.style.animationPlayState = 'running';
+    element.parentElement.addEventListener('animationend', () => {
+      element.parentElement.style.animationPlayState = 'paused';
+      load_mailbox('inbox');
+    });
+  })
+  .catch(error => console.error('Error archiving email:', error));
 }
 
 function email_reply(email) {
@@ -222,20 +203,20 @@ function email_reply(email) {
   document.querySelector('#compose-body').value = `\n\n\n___________________\nOn ${email.timestamp} ${email.sender} wrote:\n\n${email.body}`;
 
   document.querySelector('#compose-form').onsubmit = function() {
-   let emails = document.querySelector('#compose-recipients').value
-   let subject = document.querySelector('#compose-subject').value
-   let body = document.querySelector('#compose-body').value
+    let emails = document.querySelector('#compose-recipients').value
+    let subject = document.querySelector('#compose-subject').value
+    let body = document.querySelector('#compose-body').value
    
-   fetch('/emails', {
-     method: 'POST',
-     body: JSON.stringify({
-         recipients: emails,
-         subject: subject,
-         body: body
-     })
-   })
-   .then(response => response.json())
-   .then(result => {
+    fetch('/emails', {
+      method: 'POST',
+      body: JSON.stringify({
+          recipients: emails,
+          subject: subject,
+          body: body
+      })
+    })
+    .then(response => response.json())
+    .then(result => {
       // Print result
       console.log(result);
     })

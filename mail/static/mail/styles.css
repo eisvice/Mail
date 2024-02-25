@@ -47,11 +47,6 @@ textarea {
 }
 
 
-.message-body pre {
-    white-space: pre-wrap;
-}
-
-
 @keyframes hide {
     0% {
         opacity: 1;
@@ -73,7 +68,46 @@ textarea {
 
 #email-view {
     animation-name: hide;
-    animation-duration: 2s;
+    animation-duration: 1s;
     animation-fill-mode: forwards;
     animation-play-state: paused;
+}
+
+
+.message-subject, .message-body {
+    padding-top: 10px;
+    padding-bottom: 15px;
+}
+
+
+.message-body pre {
+    white-space: pre-wrap;
+}
+
+
+.message-body {
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+
+.message-recipient, .message-sender, .message-date {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.archive-button, .unarchive-button, .reply-button {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 8px;
+    padding: 5px;
+    width: 75px;
+    border-radius: 2px;
+    background-color: aliceblue;
+    border: 1px solid #bad4f5;
+}
+
+
+.archive-button:hover, .unarchive-button:hover, .reply-button:hover {
+    background-color: #74acf5;
+    transition: background-color 0.2s ease-in-out;
 }
