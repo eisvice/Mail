@@ -131,7 +131,8 @@ def login_view(request):
     if request.method == "POST":
 
         # Attempt to sign user in
-        username = request.POST["username"]
+        email = request.POST["email"]
+        username = User.objects.get(email=email)
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
 
